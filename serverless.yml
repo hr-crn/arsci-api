@@ -1,0 +1,144 @@
+# "org" ensures this Service is used with the correct Serverless Framework License Key.
+org: arscience
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: arsci
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  environment:
+    STUDENT_TABLE: arsci-db-students
+    TEACHER_TABLE: arsci-db-teachers
+    SECTION_TABLE: arsci-db-sections
+    JWT_SECRET: ${env:JWT_SECRET}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Scan
+          Resource: arn:aws:dynamodb:ap-southeast-1:474668381807:table/arsci-db-*
+
+functions:
+  createStudent:
+    handler: src/students/studentService.createStudent
+    events:
+      - http:
+          path: students
+          method: post
+          cors: true
+
+  getStudent:
+    handler: src/students/studentService.getStudent
+    events:
+      - http:
+          path: students/{studentID}
+          method: get
+          cors: true
+
+  updateStudent:
+    handler: src/students/studentService.updateStudent
+    events:
+      - http:
+          path: students/{studentID}
+          method: put
+          cors: true
+
+  deleteStudent:
+    handler: src/students/studentService.deleteStudent
+    events:
+      - http:
+          path: students/{studentID}
+          method: delete
+          cors: true
+
+  listStudents:
+    handler: src/students/studentService.listStudents
+    events:
+      - http:
+          path: students
+          method: get
+          cors: true
+
+  ##Section
+  createSection:
+    handler: src/sections/sectionService.createSection
+    events:
+      - http:
+          path: sections
+          method: post
+          cors: true
+
+  getSection:
+    handler: src/sections/sectionService.getSection
+    events:
+      - http:
+          path: sections/{sectionID}
+          method: get
+          cors: true
+
+  updateSection:
+    handler: src/sections/sectionService.updateSection
+    events:
+      - http:
+          path: sections/{sectionID}
+          method: put
+          cors: true
+
+  deleteSection:
+    handler: src/sections/sectionService.deleteSection
+    events:
+      - http:
+          path: sections/{sectionID}
+          method: delete
+          cors: true
+
+  listSections:
+    handler: src/sections/sectionService.listSections
+    events:
+      - http:
+          path: sections
+          method: get
+          cors: true
+
+  ##Teacher
+  teacherSignup:
+    handler: src/teacher/signupService.signup
+    events:
+      - http:
+          path: teachers/signup
+          method: post
+          cors: true
+
+  teacherLogin:
+    handler: src/teacher/loginService.login
+    events:
+      - http:
+          path: teachers/login
+          method: post
+          cors: true
+
+  getTeacher:
+    handler: src/teacher/teacherService.getTeacher
+    events:
+      - http:
+          path: teachers/{email}
+          method: get
+          cors: true
+
+  updateTeacher:
+    handler: src/teacher/teacherService.updateTeacher
+    events:
+      - http:
+          path: teachers/{email}
+          method: put
+          cors: true
+
+plugins:
+  - serverless-offline
